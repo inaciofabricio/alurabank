@@ -1,13 +1,19 @@
 import { NegociacoesView, MensagemView } from './../views/index';
 import { Negociacoes,Negociacao } from './../models/index';
+// import { domInject } from './../helpers/decorators/index';
 
 export class NegociacaoController {
 
+    // @domInject('#data')
     private _inputData: JQuery;
+
+    // @domInject('#quantidade')
     private _inputQuantidade: JQuery;
+
+    // @domInject('#valor')
     private _inputValor: JQuery;
-    // private _negociacoes: Negociacoes = new Negociacoes();
-    private _negociacoes = new Negociacoes();
+
+    private _negociacoes: Negociacoes = new Negociacoes();
     private _negociacoesView = new NegociacoesView('#negociacoesView');
     private _mensagemView = new MensagemView('#mensagemView');
 
@@ -18,6 +24,7 @@ export class NegociacaoController {
         this._negociacoesView.update(this._negociacoes);
     }
 
+    // @logarTempoExecucao()
     adiciona(event: Event) {
 
         event.preventDefault();
