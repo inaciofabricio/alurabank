@@ -1,6 +1,8 @@
 import { NegociacoesView, MensagemView } from './../views/index';
-import { Negociacoes,Negociacao } from './../models/index';
+import { Negociacoes,Negociacao, NegociacaoParcial } from './../models/index';
+import { NegociacaoService } from './../services/index';
 // import { domInject } from './../helpers/decorators/index';
+import { throttle } from './../helpers/decorators/index';
 
 export class NegociacaoController {
 
@@ -16,6 +18,7 @@ export class NegociacaoController {
     private _negociacoes: Negociacoes = new Negociacoes();
     private _negociacoesView = new NegociacoesView('#negociacoesView');
     private _mensagemView = new MensagemView('#mensagemView');
+    private _negociacaoService = new NegociacaoService();
 
     constructor() {
         this._inputData = $('#data');
@@ -24,10 +27,8 @@ export class NegociacaoController {
         this._negociacoesView.update(this._negociacoes);
     }
 
-    // @logarTempoExecucao()
-    adiciona(event: Event) {
-
-        event.preventDefault();
+    @throttle(500)
+    adiciona() {
 
         let data = new Date(this._inputData.val().replace(/-/g, ','));
 
@@ -54,9 +55,23 @@ export class NegociacaoController {
         return data.getDay() != DiaDaSemana.Sabado && data.getDay() != DiaDaSemana.Domingo;
     }
 
+    @throttle(500)
+    importaDados() {
+      
+        this._negociacaoService.obterNegociacoes(res => {
+                if(res.ok) {
+                    return res;
+                } else {
+                    throw new Error(res.statusText);
+                }
+            })
+            .then(negociacoes => {
+                negociacoes.forEach(negociacao => this._negociacoes.adiciona(negociacao))
+                this._negociacoesView.update(this._negociacoes);
+            });
+        
+    }
 }
-
-
 
 enum DiaDaSemana {
     Domingo,
